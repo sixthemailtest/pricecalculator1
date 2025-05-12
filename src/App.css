@@ -166,17 +166,187 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
   -webkit-overflow-scrolling: touch;
 }
 
-.room-filters button {
+.room-filters button, button[data-filter] {
   padding: 8px 16px !important;
   border-radius: 30px !important;
-  border: none !important;
+  border: 2px solid transparent !important;
   background-color: #f8f9fa !important;
-  cursor: pointer;
+  cursor: pointer !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   color: #6c757d !important;
   transition: all 0.2s ease !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Selected filter button styles */
+.room-filters button[data-selected="true"] {
+  font-weight: 700 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Hover styles for filter buttons */
+.room-filters button:hover,
+button[data-filter]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Common styles for all filter buttons */
+button[data-filter] {
+  border-radius: 50px !important;
+  padding: 8px 20px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* All button selected */
+.room-filters button.all-button-selected {
+  background-color: #304B82 !important;
+  color: white !important;
+  border-color: #304B82 !important;
+  box-shadow: 0 4px 10px rgba(48, 75, 130, 0.35) !important;
+}
+
+/* Available button */
+button[data-filter="available"][data-selected="false"] {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+
+.room-filters button[data-filter="available"][data-selected="true"],
+button[data-filter="available"][data-selected="true"] {
+  background-color: #10B981 !important;
+  color: white !important;
+  border-color: #0f9d7a !important;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Jacuzzi button */
+button[data-filter="jacuzzi"][data-selected="false"] {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #7dd3fc !important;
+}
+
+.room-filters button[data-filter="jacuzzi"][data-selected="true"],
+button[data-filter="jacuzzi"][data-selected="true"] {
+  background-color: #38BDF8 !important;
+  color: white !important;
+  border-color: #24a8e0 !important;
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.35) !important;
+}
+
+/* Non-Jacuzzi button */
+button[data-filter="non-jacuzzi"][data-selected="false"] {
+  background-color: #ede9fe !important;
+  color: #5b21b6 !important;
+  border-color: #c4b5fd !important;
+}
+
+.room-filters button[data-filter="non-jacuzzi"][data-selected="true"],
+button[data-filter="non-jacuzzi"][data-selected="true"] {
+  background-color: #8B5CF6 !important;
+  color: white !important;
+  border-color: #7c4ddc !important;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.35) !important;
+}
+
+/* Smoking button */
+button[data-filter="smoking"][data-selected="false"] {
+  background-color: #fff7ed !important;
+  color: #c2410c !important;
+  border-color: #fdba74 !important;
+}
+
+.room-filters button[data-filter="smoking"][data-selected="true"],
+button[data-filter="smoking"][data-selected="true"] {
+  background-color: #F97316 !important;
+  color: white !important;
+  border-color: #e4630a !important;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.35) !important;
+}
+
+/* Non-Smoking button */
+button[data-filter="non-smoking"][data-selected="false"] {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.room-filters button[data-filter="non-smoking"][data-selected="true"],
+button[data-filter="non-smoking"][data-selected="true"] {
+  background-color: #64748B !important;
+  color: white !important;
+  border-color: #525d6d !important;
+  box-shadow: 0 4px 10px rgba(100, 116, 139, 0.35) !important;
+}
+
+/* Handicap button */
+button[data-filter="handicap"][data-selected="false"] {
+  background-color: #f5f3ff !important;
+  color: #6d28d9 !important;
+  border-color: #c4b5fd !important;
+}
+
+.room-filters button[data-filter="handicap"][data-selected="true"],
+button[data-filter="handicap"][data-selected="true"] {
+  background-color: #8B5CF6 !important;
+  color: white !important;
+  border-color: #7647e0 !important;
+  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.35) !important;
+}
+
+/* Queen button */
+button[data-filter="Queen"][data-selected="false"] {
+  background-color: #fdf2f8 !important;
+  color: #be185d !important;
+  border-color: #fbcfe8 !important;
+}
+
+button[data-filter="Queen"][data-selected="true"] {
+  background-color: #EC4899 !important;
+  color: white !important;
+  border-color: #d93d87 !important;
+  box-shadow: 0 4px 10px rgba(236, 72, 153, 0.35) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* King button */
+button[data-filter="King"][data-selected="false"] {
+  background-color: #eef2ff !important;
+  color: #4338ca !important;
+  border-color: #c7d2fe !important;
+}
+
+button[data-filter="King"][data-selected="true"] {
+  background-color: #6366F1 !important;
+  color: white !important;
+  border-color: #4e51d6 !important;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.35) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Queen 2 Beds button */
+button[data-filter="Queen 2 Beds"][data-selected="false"] {
+  background-color: #f0f9ff !important;
+  color: #0369a1 !important;
+  border-color: #bae6fd !important;
+}
+
+button[data-filter="Queen 2 Beds"][data-selected="true"] {
+  background-color: #0EA5E9 !important;
+  color: white !important;
+  border-color: #0b8ac4 !important;
+  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35) !important;
+  transform: translateY(-2px) !important;
 }
 
 .room-filters button:hover {

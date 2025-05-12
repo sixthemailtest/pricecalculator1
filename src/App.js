@@ -3249,7 +3249,7 @@ function App() {
                     onClick={() => handleFilterClick('all')}
                     className={selectedFilters.length === 0 ? "all-button-selected" : "all-button-unselected"}
                     style={{
-                  borderRadius: '50px',
+                      borderRadius: '50px',
                       padding: '10px 20px',
                       fontWeight: selectedFilters.length === 0 ? 700 : 600,
                       fontSize: '14px',
@@ -3258,7 +3258,7 @@ function App() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                  transition: 'all 0.2s ease',
+                      transition: 'all 0.2s ease',
                       backgroundColor: selectedFilters.length === 0 ? '#304B82' : '#eef2ff',
                       color: selectedFilters.length === 0 ? '#ffffff' : '#304B82',
                       border: selectedFilters.length === 0 ? '2px solid #304B82' : '2px solid #c7d2fe',
@@ -3285,56 +3285,25 @@ function App() {
               {/* Available Button */}
                   <button
                     onClick={() => handleFilterClick('available')}
+                    data-filter="available"
+                    data-selected={selectedFilters.includes('available').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('available') ? '#10B981 !important' : '#dcfce7 !important',
-                  color: selectedFilters.includes('available') ? '#ffffff !important' : '#15803d !important',
-                  border: selectedFilters.includes('available') ? '2px solid #0f9d7a !important' : '2px solid #86efac !important',
-                  borderRadius: '50px !important',
-                  padding: '8px 20px !important',
-                  fontWeight: selectedFilters.includes('available') ? '700 !important' : '600 !important',
-                  cursor: 'pointer !important',
-                  fontSize: '14px !important',
-                  transition: 'all 0.2s ease !important',
-                      boxShadow: selectedFilters.includes('available')
-                    ? '0 4px 10px rgba(16, 185, 129, 0.35) !important'
-                    : '0 2px 5px rgba(0,0,0,0.08) !important',
-                  transform: selectedFilters.includes('available') ? 'translateY(-2px) !important' : 'none !important',
-                  position: 'relative !important',
-                  zIndex: '2 !important',
-                  width: 'auto !important',
-                  height: 'auto !important',
-                  display: 'inline-flex !important',
-                  alignItems: 'center !important',
-                  justifyContent: 'center !important',
-                  marginBottom: '0 !important',
-                  textTransform: 'none !important'
-                }}
-              >
+                      margin: '6px'
+                    }}
+                  >
                     Available
                   </button>
               {/* Jacuzzi Button */}
                   <button
                     onClick={() => handleFilterClick('jacuzzi')}
+                    data-filter="jacuzzi"
+                    data-selected={selectedFilters.includes('jacuzzi').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('jacuzzi') ? '#38BDF8' : '#e0f2fe',
-                  color: selectedFilters.includes('jacuzzi') ? '#ffffff' : '#0369a1',
-                  border: selectedFilters.includes('jacuzzi') ? '2px solid #24a8e0' : '2px solid #7dd3fc',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('jacuzzi') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: selectedFilters.includes('jacuzzi')
-                    ? '0 4px 10px rgba(56, 189, 248, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('jacuzzi') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
-                }}
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      margin: '6px'
+                    }}
               >
                 <span style={{ fontSize: '16px' }}>🛁</span> Jacuzzi
                   </button>
@@ -3342,51 +3311,27 @@ function App() {
               {/* Non-Jacuzzi Button */}
                   <button
                     onClick={() => handleFilterClick('non-jacuzzi')}
+                    data-filter="non-jacuzzi"
+                    data-selected={selectedFilters.includes('non-jacuzzi').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('non-jacuzzi') ? '#6366F1' : '#ede9fe',
-                  color: selectedFilters.includes('non-jacuzzi') ? '#ffffff' : '#5b21b6',
-                  border: selectedFilters.includes('non-jacuzzi') ? '2px solid #4e51d6' : '2px solid #c4b5fd',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('non-jacuzzi') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: selectedFilters.includes('non-jacuzzi')
-                    ? '0 4px 10px rgba(99, 102, 241, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('non-jacuzzi') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
+                      gap: '6px',
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚿</span> Non-Jacuzzi
                   </button>
               {/* Smoking Button */}
                   <button
-                onClick={() => handleFilterClick('smoking')}
+                    onClick={() => handleFilterClick('smoking')}
+                    data-filter="smoking"
+                    data-selected={selectedFilters.includes('smoking').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('smoking') ? '#F97316' : '#fff7ed',
-                  color: selectedFilters.includes('smoking') ? '#ffffff' : '#c2410c',
-                  border: selectedFilters.includes('smoking') ? '2px solid #e4630a' : '2px solid #fdba74',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('smoking') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: selectedFilters.includes('smoking')
-                    ? '0 4px 10px rgba(249, 115, 22, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('smoking') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
+                      gap: '6px',
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚬</span> Smoking
@@ -3394,122 +3339,62 @@ function App() {
               {/* Non-Smoking Button */}
                   <button
                     onClick={() => handleFilterClick('non-smoking')}
+                    data-filter="non-smoking"
+                    data-selected={selectedFilters.includes('non-smoking').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('non-smoking') ? '#64748B' : '#f1f5f9',
-                  color: selectedFilters.includes('non-smoking') ? '#ffffff' : '#334155',
-                  border: selectedFilters.includes('non-smoking') ? '2px solid #525d6d' : '2px solid #cbd5e1',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('non-smoking') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: selectedFilters.includes('non-smoking')
-                    ? '0 4px 10px rgba(100, 116, 139, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('non-smoking') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
+                      gap: '6px',
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚭</span> Non-Smoking
                   </button>
               {/* Handicap Button */}
                   <button
-                onClick={() => handleFilterClick('handicap')}
+                    onClick={() => handleFilterClick('handicap')}
+                    data-filter="handicap"
+                    data-selected={selectedFilters.includes('handicap').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('handicap') ? '#8B5CF6' : '#f5f3ff',
-                  color: selectedFilters.includes('handicap') ? '#ffffff' : '#6d28d9',
-                  border: selectedFilters.includes('handicap') ? '2px solid #7a43e8' : '2px solid #c4b5fd',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('handicap') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: selectedFilters.includes('handicap')
-                    ? '0 4px 10px rgba(139, 92, 246, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('handicap') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
+                      gap: '6px',
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>♿</span> Handicap
                   </button>
               {/* Queen Button */}
                   <button
-                onClick={() => handleFilterClick('Queen')}
+                    onClick={() => handleFilterClick('Queen')}
+                    data-filter="Queen"
+                    data-selected={selectedFilters.includes('Queen').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('Queen') ? '#EC4899' : '#fdf2f8',
-                  color: selectedFilters.includes('Queen') ? '#ffffff' : '#be185d',
-                  border: selectedFilters.includes('Queen') ? '2px solid #d63787' : '2px solid #fbcfe8',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('Queen') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
-                  boxShadow: selectedFilters.includes('Queen')
-                    ? '0 4px 10px rgba(236, 72, 153, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('Queen') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
-                }}
+                      margin: '6px'
+                    }}
               >
                 Queen
                   </button>
               {/* King Button */}
                   <button
-                onClick={() => handleFilterClick('King')}
+                    onClick={() => handleFilterClick('King')}
+                    data-filter="King"
+                    data-selected={selectedFilters.includes('King').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('King') ? '#6366F1' : '#eef2ff',
-                  color: selectedFilters.includes('King') ? '#ffffff' : '#4338ca',
-                  border: selectedFilters.includes('King') ? '2px solid #4e51d6' : '2px solid #c7d2fe',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('King') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
-                  boxShadow: selectedFilters.includes('King')
-                    ? '0 4px 10px rgba(99, 102, 241, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('King') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
-                }}
+                      margin: '6px'
+                    }}
               >
                 King
                   </button>
               {/* Queen 2 Beds Button */}
                   <button
-                onClick={() => handleFilterClick('Queen 2 Beds')}
+                    onClick={() => handleFilterClick('Queen 2 Beds')}
+                    data-filter="Queen 2 Beds"
+                    data-selected={selectedFilters.includes('Queen 2 Beds').toString()}
                     style={{
-                  backgroundColor: selectedFilters.includes('Queen 2 Beds') ? '#0EA5E9' : '#f0f9ff',
-                  color: selectedFilters.includes('Queen 2 Beds') ? '#ffffff' : '#0369a1',
-                  border: selectedFilters.includes('Queen 2 Beds') ? '2px solid #0b8ac4' : '2px solid #bae6fd',
-                  borderRadius: '50px',
-                  padding: '8px 20px',
-                  fontWeight: selectedFilters.includes('Queen 2 Beds') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                  transition: 'all 0.2s ease',
-                  whiteSpace: 'nowrap',
-                  boxShadow: selectedFilters.includes('Queen 2 Beds')
-                    ? '0 4px 10px rgba(14, 165, 233, 0.35)'
-                    : '0 2px 5px rgba(0,0,0,0.08)',
-                  transform: selectedFilters.includes('Queen 2 Beds') ? 'translateY(-2px)' : 'none',
-                  position: 'relative',
-                  zIndex: 2
-                }}
+                      margin: '6px',
+                      whiteSpace: 'nowrap'
+                    }}
               >
                     Queen 2 Beds
                   </button>
@@ -3950,29 +3835,10 @@ function App() {
               {/* Available Button */}
                   <button
                     onClick={() => handleFilterClick('available')}
+                    data-filter="available"
+                    data-selected={selectedFilters.includes('available').toString()}
                     style={{
-                      backgroundColor: selectedFilters.includes('available') ? '#10B981 !important' : '#dcfce7 !important',
-                      color: selectedFilters.includes('available') ? '#ffffff !important' : '#15803d !important',
-                      border: selectedFilters.includes('available') ? '2px solid #0f9d7a !important' : '2px solid #86efac !important',
-                      borderRadius: '50px !important',
-                      padding: '8px 20px !important',
-                      fontWeight: selectedFilters.includes('available') ? '700 !important' : '600 !important',
-                      cursor: 'pointer !important',
-                      fontSize: '14px !important',
-                      transition: 'all 0.2s ease !important',
-                      boxShadow: selectedFilters.includes('available')
-                        ? '0 4px 10px rgba(16, 185, 129, 0.35) !important'
-                        : '0 2px 5px rgba(0,0,0,0.08) !important',
-                      transform: selectedFilters.includes('available') ? 'translateY(-2px) !important' : 'none !important',
-                      position: 'relative !important',
-                      zIndex: '2 !important',
-                      width: 'auto !important',
-                      height: 'auto !important',
-                      display: 'inline-flex !important',
-                      alignItems: 'center !important',
-                      justifyContent: 'center !important',
-                      marginBottom: '0 !important',
-                      textTransform: 'none !important'
+                      margin: '6px'
                     }}
                   >
                     Available
@@ -3980,25 +3846,13 @@ function App() {
               {/* Jacuzzi Button */}
                   <button
                     onClick={() => handleFilterClick('jacuzzi')}
+                    data-filter="jacuzzi"
+                    data-selected={selectedFilters.includes('jacuzzi').toString()}
                     style={{
-                      backgroundColor: selectedFilters.includes('jacuzzi') ? '#38BDF8' : '#e0f2fe',
-                      color: selectedFilters.includes('jacuzzi') ? '#ffffff' : '#0369a1',
-                      border: selectedFilters.includes('jacuzzi') ? '2px solid #24a8e0' : '2px solid #7dd3fc',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('jacuzzi') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: selectedFilters.includes('jacuzzi')
-                        ? '0 4px 10px rgba(56, 189, 248, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('jacuzzi') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🛁</span> Jacuzzi
@@ -4007,51 +3861,27 @@ function App() {
               {/* Non-Jacuzzi Button */}
                   <button
                     onClick={() => handleFilterClick('non-jacuzzi')}
-                                  style={{
-                      backgroundColor: selectedFilters.includes('non-jacuzzi') ? '#6366F1' : '#ede9fe',
-                      color: selectedFilters.includes('non-jacuzzi') ? '#ffffff' : '#5b21b6',
-                      border: selectedFilters.includes('non-jacuzzi') ? '2px solid #4e51d6' : '2px solid #c4b5fd',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('non-jacuzzi') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
+                    data-filter="non-jacuzzi"
+                    data-selected={selectedFilters.includes('non-jacuzzi').toString()}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: selectedFilters.includes('non-jacuzzi')
-                        ? '0 4px 10px rgba(99, 102, 241, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('non-jacuzzi') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚿</span> Non-Jacuzzi
                   </button>
               {/* Smoking Button */}
                   <button
-                onClick={() => handleFilterClick('smoking')}
-                            style={{ 
-                      backgroundColor: selectedFilters.includes('smoking') ? '#F97316' : '#fff7ed',
-                      color: selectedFilters.includes('smoking') ? '#ffffff' : '#c2410c',
-                      border: selectedFilters.includes('smoking') ? '2px solid #e4630a' : '2px solid #fdba74',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('smoking') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
+                    onClick={() => handleFilterClick('smoking')}
+                    data-filter="smoking"
+                    data-selected={selectedFilters.includes('smoking').toString()}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: selectedFilters.includes('smoking')
-                        ? '0 4px 10px rgba(249, 115, 22, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('smoking') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚬</span> Smoking
@@ -4059,121 +3889,61 @@ function App() {
               {/* Non-Smoking Button */}
                   <button
                     onClick={() => handleFilterClick('non-smoking')}
-                                    style={{
-                      backgroundColor: selectedFilters.includes('non-smoking') ? '#64748B' : '#f1f5f9',
-                      color: selectedFilters.includes('non-smoking') ? '#ffffff' : '#334155',
-                      border: selectedFilters.includes('non-smoking') ? '2px solid #525d6d' : '2px solid #cbd5e1',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('non-smoking') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
+                    data-filter="non-smoking"
+                    data-selected={selectedFilters.includes('non-smoking').toString()}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: selectedFilters.includes('non-smoking')
-                        ? '0 4px 10px rgba(100, 116, 139, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('non-smoking') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>🚭</span> Non-Smoking
                   </button>
               {/* Handicap Button */}
                   <button
-                onClick={() => handleFilterClick('handicap')}
-                                style={{
-                      backgroundColor: selectedFilters.includes('handicap') ? '#8B5CF6' : '#f5f3ff',
-                      color: selectedFilters.includes('handicap') ? '#ffffff' : '#6d28d9',
-                      border: selectedFilters.includes('handicap') ? '2px solid #7a43e8' : '2px solid #c4b5fd',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('handicap') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
+                    onClick={() => handleFilterClick('handicap')}
+                    data-filter="handicap"
+                    data-selected={selectedFilters.includes('handicap').toString()}
+                    style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: selectedFilters.includes('handicap')
-                        ? '0 4px 10px rgba(139, 92, 246, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('handicap') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 <span style={{ fontSize: '16px' }}>♿</span> Handicap
                   </button>
               {/* Queen Button */}
                   <button
-                onClick={() => handleFilterClick('Queen')}
+                    onClick={() => handleFilterClick('Queen')}
+                    data-filter="Queen"
+                    data-selected={selectedFilters.includes('Queen').toString()}
                     style={{
-                      backgroundColor: selectedFilters.includes('Queen') ? '#EC4899' : '#fdf2f8',
-                      color: selectedFilters.includes('Queen') ? '#ffffff' : '#be185d',
-                      border: selectedFilters.includes('Queen') ? '2px solid #d63787' : '2px solid #fbcfe8',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('Queen') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
-                      boxShadow: selectedFilters.includes('Queen')
-                        ? '0 4px 10px rgba(236, 72, 153, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('Queen') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 Queen
                   </button>
               {/* King Button */}
                   <button
-                onClick={() => handleFilterClick('King')}
+                    onClick={() => handleFilterClick('King')}
+                    data-filter="King"
+                    data-selected={selectedFilters.includes('King').toString()}
                     style={{
-                      backgroundColor: selectedFilters.includes('King') ? '#6366F1' : '#eef2ff',
-                      color: selectedFilters.includes('King') ? '#ffffff' : '#4338ca',
-                      border: selectedFilters.includes('King') ? '2px solid #4e51d6' : '2px solid #c7d2fe',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('King') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
-                      boxShadow: selectedFilters.includes('King')
-                        ? '0 4px 10px rgba(99, 102, 241, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('King') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px'
                     }}
                   >
                 King
                   </button>
               {/* Queen 2 Beds Button */}
                   <button
-                onClick={() => handleFilterClick('Queen 2 Beds')}
+                    onClick={() => handleFilterClick('Queen 2 Beds')}
+                    data-filter="Queen 2 Beds"
+                    data-selected={selectedFilters.includes('Queen 2 Beds').toString()}
                     style={{
-                      backgroundColor: selectedFilters.includes('Queen 2 Beds') ? '#0EA5E9' : '#f0f9ff',
-                      color: selectedFilters.includes('Queen 2 Beds') ? '#ffffff' : '#0369a1',
-                      border: selectedFilters.includes('Queen 2 Beds') ? '2px solid #0b8ac4' : '2px solid #bae6fd',
-                      borderRadius: '50px',
-                      padding: '8px 20px',
-                      fontWeight: selectedFilters.includes('Queen 2 Beds') ? '700' : '600',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.2s ease',
-                      whiteSpace: 'nowrap',
-                      boxShadow: selectedFilters.includes('Queen 2 Beds')
-                        ? '0 4px 10px rgba(14, 165, 233, 0.35)'
-                        : '0 2px 5px rgba(0,0,0,0.08)',
-                      transform: selectedFilters.includes('Queen 2 Beds') ? 'translateY(-2px)' : 'none',
-                      position: 'relative',
-                      zIndex: 2
+                      margin: '6px',
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     Queen 2 Beds
