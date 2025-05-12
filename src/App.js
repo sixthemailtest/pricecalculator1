@@ -2133,6 +2133,10 @@ function App() {
       // Otherwise add it to the selection
       return [...prev, roomNumber];
     });
+    
+    // We're not changing the room status to occupied when clicked
+    // This way the room stays green when selected from the UI
+    // Room status will only change to occupied through the change status modal
   };
   
   // Function to confirm room selection and close modal
@@ -2757,13 +2761,51 @@ function App() {
                 padding: '12px',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
               }}>
-                <h3 style={{ 
-                  fontSize: '16px', 
-                  margin: '0 0 10px 0',
-                  color: '#304B82',
-                  borderBottom: '1px solid #c7d2fe',
-                  paddingBottom: '5px' 
-                }}>Selected Rooms</h3>
+                <div style={{ 
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '10px',
+                  background: 'transparent'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '16px', 
+                    margin: '0',
+                    color: 'rgb(48,75,130)',
+                    position: 'relative',
+                    border: 'none',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
+                  }}>Selected Rooms</h3>
+                  <button 
+                    onClick={() => setSelectedRoomsForShortStay([])}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      color: '#e53e3e',
+                      border: 'none',
+                      borderRadius: '20px',
+                      padding: '4px 10px',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.15)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.8)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                    }}
+                  >
+                    Clear
+                  </button>
+                </div>
                 
                 {/* Get all selected rooms data */}
                 {(() => {
