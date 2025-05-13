@@ -3401,195 +3401,290 @@ function App() {
               </div>
 
             {/* Ground Floor Rooms */}
-                  <div className="rooms-grid" style={{
-              position: 'relative',
-              zIndex: 2
+                  <div style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-around',
+                    maxWidth: '900px',
+                    margin: '0 auto',
+                    padding: '30px',
+                    marginBottom: '50px',
+                    gap: '70px 40px' /* Very large gap to ensure no overlapping */
                   }}>
                     {rooms.groundFloor
                       .filter(filterRoom)
-                      .map(room => (
-                        <div key={room.number} 
-                            className={`room-card ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
-                            onClick={() => handleRoomCardClick('groundFloor', room.number)}
-                            style={selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
-                              opacity: 0.4,
-                              filter: 'grayscale(80%)',
-                              pointerEvents: 'none',
-                              transform: 'none',
-                              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-                            } : {}}
-                        >
-                          <div className="room-number">Room {room.number}</div>
-                          <div>{room.beds}</div>
-                          <div className="room-features">
-                            {room.type === 'jacuzzi' && <span>🛁</span>}
-                            {room.smoking ? <span>🚬</span> : <span>🚭</span>}
-                            {room.handicap && <span>♿</span>}
-                          </div>
-                          <div className="price-tag">
-                            {(() => { /* Changed to return JSX for breakdown */
-                              // Calculate price based on room properties
-                              const now = new Date();
-                              const day = now.getDay();
-                              
-                              // Base price calculation
-                              let basePrice;
-                              if (day === 5) { // Friday
-                                basePrice = room.type === 'jacuzzi' ? prices.friday.withJacuzzi : prices.friday.withoutJacuzzi;
-                              } else if (day === 0 || day === 6) { // Weekend
-                                basePrice = room.type === 'jacuzzi' ? prices.weekend.withJacuzzi : prices.weekend.withoutJacuzzi;
-                              } else { // Weekday
-                                basePrice = room.type === 'jacuzzi' ? prices.weekday.withJacuzzi : prices.weekday.withoutJacuzzi;
-                              }
-                              
-                              // Add bed adjustment
-                              if (room.beds.includes('King')) {
-                                basePrice += 5;
-                              } else if (room.beds.includes('2 Beds')) {
-                                basePrice += 10;
-                              }
-                              
-                              // Add tax
-                              const tax = basePrice * 0.15;
-                              const total = basePrice + tax;
-                              
-                              return (
-                                <>
-                                  <span style={{ fontSize: '9px', lineHeight: '1.1', display: 'block', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '500' }}>Base:${basePrice.toFixed(2)}</span>
-                                  <span style={{ fontSize: '9px', lineHeight: '1.1', display: 'block', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '500' }}>Tax:${tax.toFixed(2)}</span>
-                                  <span style={{ fontSize: '10px', fontWeight: 'bold', lineHeight: '1.1', display: 'block' }}>Total:${total.toFixed(2)}</span>
-                                </>
-                              );
-                            })()}
-                              </div>
-                                  </div>
-                      ))}
+                      .map(room => {
+                        // Calculate price based on room properties
+                        const now = new Date();
+                        const day = now.getDay();
+                        
+                        // Base price calculation
+                        let basePrice;
+                        if (day === 5) { // Friday
+                          basePrice = room.type === 'jacuzzi' ? prices.friday.withJacuzzi : prices.friday.withoutJacuzzi;
+                        } else if (day === 0 || day === 6) { // Weekend
+                          basePrice = room.type === 'jacuzzi' ? prices.weekend.withJacuzzi : prices.weekend.withoutJacuzzi;
+                        } else { // Weekday
+                          basePrice = room.type === 'jacuzzi' ? prices.weekday.withJacuzzi : prices.weekday.withoutJacuzzi;
+                        }
+                        
+                        // Add bed adjustment
+                        if (room.beds.includes('King')) {
+                          basePrice += 5;
+                        } else if (room.beds.includes('2 Beds')) {
+                          basePrice += 10;
+                        }
+                        
+                        // Add tax
+                        const tax = basePrice * 0.15;
+                        const total = basePrice + tax;
+                        
+                        return (
+                          <div key={room.number} style={{ position: 'relative' }}>
+                            {/* Room Card with Price Tooltip */}
+                            <div 
+                              className="room-card-container" 
+                              onClick={() => handleRoomCardClick('groundFloor', room.number)}
+                              style={{
+                                ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
+                                  opacity: 0.4,
+                                  filter: 'grayscale(80%)',
+                                  pointerEvents: 'none'
+                                } : {})
+                              }}
+                            >
+                              {/* Price tooltip that appears on hover */}
+                              <div className="price-tooltip">
+                                <div className="price-row">
+                                  <span>Base:</span>
+                                  <span>${basePrice.toFixed(2)}</span>
+                                </div>
+                                <div className="price-row">
+                                  <span>Tax:</span>
+                                  <span>${tax.toFixed(2)}</span>
+                                </div>
+                                <div className="price-row total">
+                                  <span>Total:</span>
+                                  <span>${total.toFixed(2)}</span>
                                 </div>
                               </div>
                               
-          {/* First Floor Section - Bottom Right */}
-                              <div style={{ 
-            gridArea: 'firstfloor', 
-            background: 'linear-gradient(135deg, #eff1fe, #e6ecff)',
-            backgroundSize: 'cover',
-            padding: '20px', 
-            borderRadius: '16px',
-            boxShadow: '0 8px 30px rgba(0, 31, 92, 0.12)',
-            border: '1px solid rgba(255, 255, 255, 0.6)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ 
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              left: 0,
-              backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(106, 130, 251, 0.04) 0%, transparent 25%), radial-gradient(circle at 85% 80%, rgba(252, 92, 125, 0.03) 0%, transparent 20%)',
-              opacity: 1
-            }}></div>
-            
-            <div style={{ 
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '6px',
-              background: 'linear-gradient(90deg, #FC5C7D, #6A82FB)',
-              borderRadius: '16px 16px 0 0'
-            }}></div>
-            
-            <div style={{ 
-                                display: 'flex',
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              background: 'linear-gradient(90deg, #FC5C7D, #6A82FB)',
-              padding: '12px 15px', 
-              borderRadius: '12px',
-              color: 'white',
-              marginBottom: '15px',
-              boxShadow: '0 4px 15px rgba(252, 92, 125, 0.2)',
-              position: 'relative',
-              zIndex: 1
-            }}>
-              <h2 className="section-header" style={{ margin: 0, borderBottom: 'none', color: 'white', fontSize: '16px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700' }}>First Floor</h2>
-            </div>
-            
-            {/* Room Filters Title - REMOVED */}
-            
-            {/* First Floor Rooms */}
-            <div className="rooms-grid" style={{
-              background: 'linear-gradient(145deg, rgba(255,255,255,0.85), rgba(243,241,255,0.7))',
-              padding: '15px',
-              borderRadius: '12px',
-              boxShadow: '0 2px 10px rgba(106, 130, 251, 0.1)',
-              border: '1px solid rgba(255,255,255,0.6)',
-              position: 'relative',
-              zIndex: 2
-            }}>
-                    {rooms.firstFloor
-                      .filter(filterRoom)
-                      .map(room => (
-                        <div key={room.number} 
-                            className={`room-card ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
-                            onClick={() => handleRoomCardClick('firstFloor', room.number)}
-                            style={selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
-                              opacity: 0.4,
-                              filter: 'grayscale(80%)',
-                              pointerEvents: 'none',
-                              transform: 'none',
-                              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-                            } : {}}
-                        >
-                          <div className="room-number">Room {room.number}</div>
-                          <div>{room.beds}</div>
-                          <div className="room-features">
-                            {room.type === 'jacuzzi' && <span>🛁</span>}
-                            {room.smoking ? <span>🚬</span> : <span>🚭</span>}
-                            {room.handicap && <span>♿</span>}
+                              {/* Room card */}
+                              <div 
+                                className={`room-card room-card-front ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
+                                style={{
+                                  padding: '6px',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'center',
+                                  ...(room.number >= 101 && room.number <= 109 ? {
+                                    background: 'linear-gradient(135deg, #26a69a, #2bbbad)'
+                                  } : {})
+                                }}
+                              >
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  fontWeight: '700', 
+                                  fontSize: '12px', 
+                                  marginBottom: '2px',
+                                  color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                                }}>Room {room.number}</div>
+                                <div style={{ 
+                                  textAlign: 'center', 
+                                  fontSize: '10px', 
+                                  marginBottom: '2px',
+                                  color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                                }}>{room.beds}</div>
+                                <div style={{ 
+                                  display: 'flex', 
+                                  justifyContent: 'center', 
+                                  gap: '3px', 
+                                  marginBottom: '1px',
+                                  color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                                }}>
+                                  {room.type === 'jacuzzi' && <span title="Jacuzzi">🛁</span>}
+                                  {room.smoking ? <span title="Smoking">🚬</span> : <span title="Non-Smoking">🚭</span>}
+                                  {room.handicap && <span title="Handicap">♿</span>}
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="price-tag">
-                            {(() => { /* Changed to return JSX for breakdown */
-                              // Calculate price based on room properties
-                                  const now = new Date();
-                              const day = now.getDay();
-                                  
-                              // Base price calculation
-                                  let basePrice;
-                                  if (day === 5) { // Friday
-                                    basePrice = room.type === 'jacuzzi' ? prices.friday.withJacuzzi : prices.friday.withoutJacuzzi;
-                              } else if (day === 0 || day === 6) { // Weekend
-                                    basePrice = room.type === 'jacuzzi' ? prices.weekend.withJacuzzi : prices.weekend.withoutJacuzzi;
-                                  } else { // Weekday
-                                    basePrice = room.type === 'jacuzzi' ? prices.weekday.withJacuzzi : prices.weekday.withoutJacuzzi;
-                                  }
-                                  
-                              // Add bed adjustment
-                              if (room.beds.includes('King')) {
-                                basePrice += 5;
-                              } else if (room.beds.includes('2 Beds')) {
-                                basePrice += 10;
-                              }
-                              
-                              // Add tax
-                              const tax = basePrice * 0.15;
-                              const total = basePrice + tax;
-                              
-                              return (
-                                <>
-                                  <span style={{ fontSize: '9px', lineHeight: '1.1', display: 'block', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '500' }}>Base:${basePrice.toFixed(2)}</span>
-                                  <span style={{ fontSize: '9px', lineHeight: '1.1', display: 'block', color: 'rgba(255, 255, 255, 0.9)', fontWeight: '500' }}>Tax:${tax.toFixed(2)}</span>
-                                  <span style={{ fontSize: '10px', fontWeight: 'bold', lineHeight: '1.1', display: 'block' }}>Total:${total.toFixed(2)}</span>
-                                </>
-                              );
-                            })()}
+                        );
+                      })}
+                  </div>
+                </div>
+              
+              {/* First Floor Section - Bottom Right */}
+              <div style={{ 
+                gridArea: 'firstfloor', 
+                background: 'linear-gradient(135deg, #eff1fe, #e6ecff)',
+                backgroundSize: 'cover',
+                padding: '20px', 
+                borderRadius: '16px',
+                boxShadow: '0 8px 30px rgba(0, 31, 92, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.6)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ 
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(106, 130, 251, 0.04) 0%, transparent 25%), radial-gradient(circle at 85% 80%, rgba(252, 92, 125, 0.03) 0%, transparent 20%)',
+                  opacity: 1
+                }}></div>
+                
+                <div style={{ 
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '6px',
+                  background: 'linear-gradient(90deg, #FC5C7D, #6A82FB)',
+                  borderRadius: '16px 16px 0 0'
+                }}></div>
+                
+                <div style={{ 
+                  display: 'flex',
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  background: 'linear-gradient(90deg, #FC5C7D, #6A82FB)',
+                  padding: '12px 15px', 
+                  borderRadius: '12px',
+                  color: 'white',
+                  marginBottom: '15px',
+                  boxShadow: '0 4px 15px rgba(252, 92, 125, 0.2)',
+                  position: 'relative',
+                  zIndex: 1
+                }}>
+                  <h2 className="section-header" style={{ margin: 0, borderBottom: 'none', color: 'white', fontSize: '16px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '700' }}>First Floor</h2>
+                </div>
+                
+                {/* Room Filters Title - REMOVED */}
+                
+                {/* First Floor Rooms */}
+                <div style={{
+                  background: 'linear-gradient(145deg, rgba(255,255,255,0.85), rgba(243,241,255,0.7))',
+                  padding: '30px',
+                  borderRadius: '12px',
+                  boxShadow: '0 2px 10px rgba(106, 130, 251, 0.1)',
+                  border: '1px solid rgba(255,255,255,0.6)',
+                  position: 'relative',
+                  zIndex: 2,
+                  marginBottom: '50px',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-around',
+                  gap: '70px 40px' /* Very large gap to ensure no overlapping */
+                }}>
+                  {rooms.firstFloor
+                    .filter(filterRoom)
+                    .map(room => {
+                      // Calculate price based on room properties
+                      const now = new Date();
+                      const day = now.getDay();
+                      
+                      // Base price calculation
+                      let basePrice;
+                      if (day === 5) { // Friday
+                        basePrice = room.type === 'jacuzzi' ? prices.friday.withJacuzzi : prices.friday.withoutJacuzzi;
+                      } else if (day === 0 || day === 6) { // Weekend
+                        basePrice = room.type === 'jacuzzi' ? prices.weekend.withJacuzzi : prices.weekend.withoutJacuzzi;
+                      } else { // Weekday
+                        basePrice = room.type === 'jacuzzi' ? prices.weekday.withJacuzzi : prices.weekday.withoutJacuzzi;
+                      }
+                      
+                      // Add bed adjustment
+                      if (room.beds.includes('King')) {
+                        basePrice += 5;
+                      } else if (room.beds.includes('2 Beds')) {
+                        basePrice += 10;
+                      }
+                      
+                      // Add tax
+                      const tax = basePrice * 0.15;
+                      const total = basePrice + tax;
+                      
+                      return (
+                        <div key={room.number} style={{ position: 'relative' }}>
+                          {/* Room Card with Price Tooltip */}
+                          <div 
+                            className="room-card-container" 
+                            onClick={() => handleRoomCardClick('firstFloor', room.number)}
+                            style={{
+                              ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
+                                opacity: 0.4,
+                                filter: 'grayscale(80%)',
+                                pointerEvents: 'none'
+                              } : {})
+                            }}
+                          >
+                            {/* Price tooltip that appears on hover */}
+                            <div className="price-tooltip">
+                              <div className="price-row">
+                                <span>Base:</span>
+                                <span>${basePrice.toFixed(2)}</span>
+                              </div>
+                              <div className="price-row">
+                                <span>Tax:</span>
+                                <span>${tax.toFixed(2)}</span>
+                              </div>
+                              <div className="price-row total">
+                                <span>Total:</span>
+                                <span>${total.toFixed(2)}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Room card */}
+                            <div 
+                              className={`room-card room-card-front ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
+                              style={{
+                                padding: '6px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                ...(room.number >= 101 && room.number <= 109 ? {
+                                  background: 'linear-gradient(135deg, #26a69a, #2bbbad)'
+                                } : {})
+                              }}
+                            >
+                              <div style={{ 
+                                textAlign: 'center',
+                                fontWeight: '700', 
+                                fontSize: '12px',
+                                marginBottom: '2px',
+                                color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                              }}>Room {room.number}</div>
+                              <div style={{ 
+                                textAlign: 'center',
+                                fontSize: '10px',
+                                marginBottom: '2px',
+                                color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                              }}>{room.beds}</div>
+                              <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'center', 
+                                gap: '3px', 
+                                marginBottom: '1px',
+                                color: room.number >= 101 && room.number <= 109 ? 'white' : 'inherit'
+                              }}>
+                                {room.type === 'jacuzzi' && <span title="Jacuzzi">🛁</span>}
+                                {room.smoking ? <span title="Smoking">🚬</span> : <span title="Non-Smoking">🚭</span>}
+                                {room.handicap && <span title="Handicap">♿</span>}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      ))}
-                                  </div>
-                                </div>
-                                </div>
-                              </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+          </div>
                               
       {/* Add Price Change Modal (already added) */}
 
@@ -3952,26 +4047,28 @@ function App() {
 
             {/* Ground Floor Rooms */}
             <div style={{ marginBottom: '20px' }}>
-                    <h3 style={{ 
+                <h3 style={{ 
                   color: '#2d3748', 
-                fontSize: '18px',
-                borderBottom: '1px solid #e2e8f0',
-                      paddingBottom: '10px',
-                marginBottom: '15px'
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  marginBottom: '15px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
                 }}>
-                Ground Floor
-                    </h3>
-                                      <div style={{ 
-              display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                gap: '15px'
-              }}>
+                  Ground Floor
+                </h3>
+                <div style={{ 
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                  gap: '15px'
+                }}>
                 {rooms.groundFloor
                   .filter(filterRoom) // Apply filter here
                   .map(room => (
                   <div 
                     key={room.number}
-                              style={{ 
+                    style={{ 
                       padding: '15px',
                       borderRadius: '10px',
                       backgroundColor: room.status === 'available' ? 'rgba(42, 157, 143, 0.1)' : 

@@ -166,6 +166,116 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Room card with tooltip price display */
+.room-card-container {
+  width: 60px;
+  height: 60px;
+  margin: 20px;
+  position: relative;
+  border-radius: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.room-card-front {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Price tooltip that appears on hover */
+.price-tooltip {
+  position: absolute;
+  top: -10px; /* Position closer to the middle of the card */
+  left: 50%;
+  transform: translate(-50%, -100%);
+  width: 100px; /* Even bigger width */
+  background: linear-gradient(145deg, #2c3e50, #4776E6); /* Nice gradient background */
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white; /* White text for dark background */
+  font-size: 11px; /* Larger font size */
+}
+
+/* Arrow at the bottom of tooltip */
+.price-tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #4776E6 transparent transparent; /* Match the gradient end color */
+}
+
+.room-card-container:hover .price-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.room-card-back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 5px;
+  font-size: 10px;
+  color: #333;
+  text-align: center;
+  background: linear-gradient(145deg, #f0f4f8, #e6f0f9);
+  border: 1px solid rgba(0, 31, 92, 0.1);
+}
+
+.room-card-back .price-title {
+  font-weight: 700;
+  font-size: 11px;
+  margin-bottom: 3px;
+  color: #2c3e50;
+  border-bottom: 1px solid rgba(0, 31, 92, 0.1);
+  width: 100%;
+  padding-bottom: 2px;
+}
+
+.room-card-back .price-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 2px 0;
+  font-size: 10px; /* Larger font for price rows */
+  line-height: 1.4;
+}
+
+.room-card-back .price-row.total {
+  margin-top: 3px;
+  font-weight: 700;
+  color: white;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 3px;
+  font-size: 11px; /* Larger for total */
+}
+
+/* Room spacing for flex layout */
+.rooms-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: space-around;
+  padding: 20px;
+  margin-top: 15px;
+}
+
 .room-filters button, button[data-filter] {
   padding: 8px 16px !important;
   border-radius: 30px !important;
