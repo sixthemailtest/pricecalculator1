@@ -333,6 +333,11 @@ function App() {
     return lockState ? JSON.parse(lockState) : false;
   });
   
+  // State to track which card is being hovered
+  const [hoveredCard, setHoveredCard] = useState(null);
+  // State to track mouse position for tooltip
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  
   // Refs for drag functionality
   const dragRef = useRef({
     isDragging: false,
@@ -1602,6 +1607,24 @@ function App() {
     const newLockState = !isLayoutLocked;
     setIsLayoutLocked(newLockState);
     localStorage.setItem('layoutLocked', JSON.stringify(newLockState));
+  };
+  
+  // Function to handle mouse enter on room card
+  const handleCardMouseEnter = (floor, roomNumber, basePrice, tax, total, e) => {
+    setHoveredCard({ floor, roomNumber, basePrice, tax, total });
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
+  
+  // Function to handle mouse leave on room card
+  const handleCardMouseLeave = () => {
+    setHoveredCard(null);
+  };
+  
+  // Function to handle mouse move on room card
+  const handleCardMouseMove = (e) => {
+    if (hoveredCard) {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    }
   };
   
   // Function to rotate a room card
@@ -3684,6 +3707,9 @@ function App() {
                             {/* Draggable Room Card with Price Tooltip */}
                             <div 
                               onMouseDown={(e) => handleMouseDown(e, room.number, 'groundFloor')}
+                              onMouseEnter={(e) => handleCardMouseEnter('groundFloor', room.number, basePrice, tax, total, e)}
+                              onMouseLeave={handleCardMouseLeave}
+                              onMouseMove={handleCardMouseMove}
                               className="room-card-container" 
                               style={{
                                 ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
@@ -3722,21 +3748,7 @@ function App() {
                                 </div>
                                 
                                 {/* We'll handle click on the room card itself */}
-                              {/* Price tooltip that appears on hover */}
-                              <div className="price-tooltip">
-                                <div className="price-row">
-                                  <span>Base:</span>
-                                  <span>${basePrice.toFixed(2)}</span>
-                                </div>
-                                <div className="price-row">
-                                  <span>Tax:</span>
-                                  <span>${tax.toFixed(2)}</span>
-                                </div>
-                                <div className="price-row total">
-                                  <span>Total:</span>
-                                  <span>${total.toFixed(2)}</span>
-                                </div>
-                              </div>
+                              {/* Using global tooltip instead of local tooltip */}
                               
                               {/* Room card */}
                               <div 
@@ -3934,6 +3946,9 @@ function App() {
                           {/* Draggable Room Card with Price Tooltip */}
                           <div 
                             onMouseDown={(e) => handleMouseDown(e, room.number, 'firstFloor')}
+                            onMouseEnter={(e) => handleCardMouseEnter('firstFloor', room.number, basePrice, tax, total, e)}
+                            onMouseLeave={handleCardMouseLeave}
+                            onMouseMove={handleCardMouseMove}
                             className="room-card-container" 
                             style={{
                               ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
@@ -3969,22 +3984,6 @@ function App() {
                               }}
                             >
                               ↻
-                            </div>
-                            
-                            {/* Price tooltip that appears on hover */}
-                            <div className="price-tooltip">
-                              <div className="price-row">
-                                <span>Base:</span>
-                                <span>${basePrice.toFixed(2)}</span>
-                              </div>
-                              <div className="price-row">
-                                <span>Tax:</span>
-                                <span>${tax.toFixed(2)}</span>
-                              </div>
-                              <div className="price-row total">
-                                <span>Total:</span>
-                                <span>${total.toFixed(2)}</span>
-                              </div>
                             </div>
                             
                             {/* Room card */}
@@ -4118,6 +4117,37 @@ function App() {
                           </div>
                   </div>
                 )}
+      
+      {/* Global tooltip that follows the mouse */}
+      {hoveredCard && (
+        <div 
+          className="price-tooltip" 
+          style={{
+            position: 'fixed',
+            top: mousePos.y - 100,
+            left: mousePos.x,
+            transform: 'none',
+            opacity: 1,
+            visibility: 'visible',
+            pointerEvents: 'none',
+            zIndex: 10000
+          }}
+        >
+          <div className="price-row">
+            <span>Base:</span>
+            <span>${hoveredCard.basePrice.toFixed(2)}</span>
+          </div>
+          <div className="price-row">
+            <span>Tax:</span>
+            <span>${hoveredCard.tax.toFixed(2)}</span>
+          </div>
+          <div className="price-row total">
+            <span>Total:</span>
+            <span>${hoveredCard.total.toFixed(2)}</span>
+          </div>
+          <div className="tooltip-arrow"></div>
+        </div>
+      )}
       
       {/* Login Modal */}
       <LoginModal 

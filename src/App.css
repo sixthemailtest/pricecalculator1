@@ -256,22 +256,27 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
 /* Price tooltip that appears on hover */
 .price-tooltip {
   position: absolute;
-  top: -10px; /* Position closer to the middle of the card */
+  top: -10px;
   left: 50%;
   transform: translate(-50%, -100%);
-  width: 100px; /* Even bigger width */
-  background: linear-gradient(145deg, #2c3e50, #4776E6); /* Nice gradient background */
+  width: 100px;
+  background: linear-gradient(145deg, #2c3e50, #4776E6);
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  z-index: 100;
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s;
   pointer-events: none;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white; /* White text for dark background */
-  font-size: 11px; /* Larger font size */
+  color: white;
+  font-size: 11px;
+}
+
+/* Special class for tooltips that should ignore rotation */
+.no-rotate {
+  transform: none !important;
 }
 
 /* Arrow at the bottom of tooltip */
@@ -280,10 +285,23 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
   position: absolute;
   bottom: -8px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); /* Center the arrow */
   border-width: 8px 8px 0;
   border-style: solid;
   border-color: #4776E6 transparent transparent; /* Match the gradient end color */
+}
+
+/* Tooltip arrow for the fixed tooltip */
+.tooltip-arrow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  margin-left: -8px;
+  width: 0;
+  height: 0;
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #4776E6 transparent transparent;
 }
 
 .room-card-container:hover .price-tooltip {
