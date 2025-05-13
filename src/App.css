@@ -168,21 +168,89 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
 
 /* Room card with tooltip price display */
 .room-card-container {
-  width: 60px;
-  height: 60px;
-  margin: 20px;
   position: relative;
+  width: 75px;
+  height: 75px;
+  perspective: 1000px;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
   border-radius: 14px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 5; /* Higher z-index for proper stacking */
+  touch-action: none; /* Improves touch dragging */
+  cursor: move; /* Show move cursor by default */
+}
+
+/* Rotation button styles */
+.rotation-button {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ec4899, #db2777);
+  border: 1.5px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  z-index: 10;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.3s ease;
+}
+
+.rotation-button:hover {
+  transform: scale(1.2) rotate(45deg);
+  background: linear-gradient(145deg, #f472b6, #ec4899);
+}
+
+/* Locked layout styles */
+.layout-locked .rotation-button {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.layout-locked .room-card-container {
+  cursor: default !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.layout-locked .room-card-container:hover,
+.layout-locked .room-card-container:active {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transform: none;
+  cursor: default;
+}
+
+/* Add shadow effect when dragging */
+.room-card-container:active {
+  box-shadow: 0 10px 25px rgba(0, 31, 92, 0.3);
+  z-index: 100; /* Much higher z-index when dragging */
+  transform: scale(1.05);
+  cursor: grabbing !important;
+}
+
+/* Hover effect */
+.room-card-container:hover {
+  box-shadow: 0 5px 15px rgba(0, 31, 92, 0.2);
+  cursor: grab;
 }
 
 .room-card-front {
   width: 100%;
   height: 100%;
-  border-radius: 14px;
+  border-radius: 12px;
+  background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer; /* Show pointer cursor for clicking */
 }
 
 /* Price tooltip that appears on hover */

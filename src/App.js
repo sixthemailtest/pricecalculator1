@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
@@ -320,6 +320,47 @@ function App() {
     weekend: { withoutJacuzzi: 139, withJacuzzi: 169 }
     };
   });
+  
+  // State for room card positions (for drag and drop functionality)
+  const [roomPositions, setRoomPositions] = useState(() => {
+    const savedPositions = localStorage.getItem('roomPositions');
+    return savedPositions ? JSON.parse(savedPositions) : {};
+  });
+  
+  // State to track whether the layout is locked
+  const [isLayoutLocked, setIsLayoutLocked] = useState(() => {
+    const lockState = localStorage.getItem('layoutLocked');
+    return lockState ? JSON.parse(lockState) : false;
+  });
+  
+  // Refs for drag functionality
+  const dragRef = useRef({
+    isDragging: false,
+    currentRoom: null,
+    startX: 0,
+    startY: 0,
+    offsetX: 0,
+    offsetY: 0
+  });
+  
+  // Function to get initial position for a room
+  const getPosition = (roomNumber, index, floor = 'groundFloor') => {
+    const positionKey = `${floor}_${roomNumber}`;
+    if (roomPositions[positionKey]) {
+      return roomPositions[positionKey];
+    }
+    
+    // Calculate a grid-like initial position
+    const columns = 4;
+    const rowIndex = Math.floor(index / columns);
+    const colIndex = index % columns;
+    
+    return {
+      left: colIndex * 100 + 50,
+      top: rowIndex * 100 + 50,
+      rotation: 0 // Default rotation is 0 degrees
+    };
+  };
   
   // Add state for tracking when prices are updated
   const [priceUpdateCounter, setPriceUpdateCounter] = useState(0);
@@ -1513,14 +1554,160 @@ function App() {
   
   // Handle room card click with authentication check
   const handleRoomCardClick = (floor, roomNumber) => {
-    // If already authenticated, allow the action
-    if (isAuthenticated) {
+    // For Ground Floor and First Floor, don't require authentication
+    if (floor === 'groundFloor' || floor === 'firstFloor') {
       toggleRoomStatus(floor, roomNumber);
     } else {
-      // Store the pending action and show login modal
-      setPendingRoomAction({ floor, roomNumber });
-      setShowLoginModal(true);
+      // For other sections, check authentication
+      if (isAuthenticated) {
+        toggleRoomStatus(floor, roomNumber);
+      } else {
+        // Store the pending action and show login modal
+        setPendingRoomAction({ floor, roomNumber });
+        setShowLoginModal(true);
+      }
     }
+  };
+  
+  // Handle drag event for room cards
+  const handleDrag = (roomNumber, e, data) => {
+    // Get the current position from the drag event
+    const newPosition = { x: data.x, y: data.y };
+    
+    // Update the position in state immediately during drag
+    setRoomPositions(prevPositions => {
+      const updatedPositions = {
+        ...prevPositions,
+        [roomNumber]: newPosition
+      };
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('roomPositions', JSON.stringify(updatedPositions));
+      
+      return updatedPositions;
+    });
+  };
+  
+  // Function to reset all room positions
+  const resetRoomPositions = () => {
+    // If layout is locked, don't allow reset
+    if (isLayoutLocked) return;
+    
+    setRoomPositions({});
+    localStorage.removeItem('roomPositions');
+  };
+  
+  // Function to toggle layout lock
+  const toggleLayoutLock = () => {
+    const newLockState = !isLayoutLocked;
+    setIsLayoutLocked(newLockState);
+    localStorage.setItem('layoutLocked', JSON.stringify(newLockState));
+  };
+  
+  // Function to rotate a room card
+  const rotateRoomCard = (roomNumber, floor = 'groundFloor') => {
+    // If layout is locked, don't allow rotation
+    if (isLayoutLocked) return;
+    
+    const positionKey = `${floor}_${roomNumber}`;
+    
+    setRoomPositions(prev => {
+      const currentPosition = prev[positionKey] || getPosition(roomNumber, 0, floor);
+      const currentRotation = currentPosition.rotation || 0;
+      
+      // Rotate by 90 degrees each time, cycling through 0, 90, 180, 270 degrees
+      const newRotation = (currentRotation + 90) % 360;
+      
+      const updatedPositions = {
+        ...prev,
+        [positionKey]: {
+          ...currentPosition,
+          rotation: newRotation
+        }
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('roomPositions', JSON.stringify(updatedPositions));
+      
+      return updatedPositions;
+    });
+  };
+  
+  // Handle mouse down to start dragging
+  const handleMouseDown = (e, roomNumber, floor = 'groundFloor') => {
+    // If layout is locked, don't allow dragging
+    if (isLayoutLocked) return;
+    
+    // Only handle left mouse button
+    if (e.button !== 0) return;
+    
+    const element = e.currentTarget;
+    const rect = element.getBoundingClientRect();
+    const containerRect = element.parentElement.parentElement.getBoundingClientRect();
+    
+    // Calculate offset from mouse position to element corner
+    dragRef.current = {
+      isDragging: true,
+      currentRoom: roomNumber,
+      floor: floor,
+      startX: e.clientX,
+      startY: e.clientY,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+      containerLeft: containerRect.left,
+      containerTop: containerRect.top
+    };
+    
+    // Prevent default browser drag behavior
+    e.preventDefault();
+    
+    // Add event listeners for mouse move and up
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  
+  // Handle mouse move during drag
+  const handleMouseMove = (e) => {
+    if (!dragRef.current.isDragging) return;
+    
+    const { currentRoom, floor, containerLeft, containerTop, offsetX, offsetY } = dragRef.current;
+    const positionKey = `${floor}_${currentRoom}`;
+    
+    // Calculate new position relative to container
+    const left = Math.max(0, e.clientX - containerLeft - offsetX);
+    const top = Math.max(0, e.clientY - containerTop - offsetY);
+    
+    // Update position in state
+    setRoomPositions(prev => {
+      const currentPosition = prev[positionKey] || { rotation: 0 };
+      return {
+        ...prev,
+        [positionKey]: { 
+          ...currentPosition,
+          left, 
+          top 
+        }
+      };
+    });
+    
+    e.preventDefault();
+  };
+  
+  // Handle mouse up to end dragging
+  const handleMouseUp = (e) => {
+    if (!dragRef.current.isDragging) return;
+    
+    // Save positions to localStorage
+    localStorage.setItem('roomPositions', JSON.stringify(roomPositions));
+    
+    // Reset drag state
+    dragRef.current.isDragging = false;
+    
+    // Remove event listeners
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    
+    e.preventDefault();
   };
 
   // Update filter handling
@@ -3401,21 +3588,64 @@ function App() {
               </div>
 
             {/* Ground Floor Rooms */}
-                  <div style={{
-                    position: 'relative',
-                    zIndex: 2,
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-around',
-                    maxWidth: '900px',
-                    margin: '0 auto',
-                    padding: '30px',
-                    marginBottom: '50px',
-                    gap: '70px 40px' /* Very large gap to ensure no overlapping */
-                  }}>
+                  <div 
+                    className={isLayoutLocked ? 'layout-locked' : ''}
+                    style={{
+                      position: 'relative',
+                      zIndex: 2,
+                      display: 'block', /* Changed from flex to block for absolute positioning */
+                      maxWidth: '900px',
+                      margin: '0 auto',
+                      padding: '30px',
+                      marginBottom: '50px',
+                      minHeight: '900px', /* Significantly increased height for more dragging space */
+                      border: '1px dashed rgba(0, 31, 92, 0.2)',
+                      borderRadius: '16px',
+                      position: 'relative'
+                    }}>
+                    {/* Reset positions button */}
+                    <button 
+                      onClick={resetRoomPositions}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '120px',
+                        padding: '6px 12px',
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        border: '1px solid #e0e0e0',
+                        borderRadius: '4px',
+                        cursor: isLayoutLocked ? 'not-allowed' : 'pointer',
+                        fontSize: '12px',
+                        opacity: isLayoutLocked ? 0.6 : 1
+                      }}
+                    >
+                      Reset Positions
+                    </button>
+                    
+                    {/* Lock/Unlock button */}
+                    <button 
+                      onClick={toggleLayoutLock}
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        padding: '6px 12px',
+                        background: isLayoutLocked ? 'rgba(252, 92, 125, 0.8)' : 'rgba(106, 130, 251, 0.8)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px'
+                      }}
+                    >
+                      {isLayoutLocked ? '🔒 Unlock Layout' : '🔓 Lock Layout'}
+                    </button>
                     {rooms.groundFloor
                       .filter(filterRoom)
-                      .map(room => {
+                      .map((room, index) => {
                         // Calculate price based on room properties
                         const now = new Date();
                         const day = now.getDay();
@@ -3442,19 +3672,56 @@ function App() {
                         const total = basePrice + tax;
                         
                         return (
-                          <div key={room.number} style={{ position: 'relative' }}>
-                            {/* Room Card with Price Tooltip */}
+                          <div 
+                            key={room.number} 
+                            style={{ 
+                              position: 'absolute', 
+                              left: `${getPosition(room.number, index, 'groundFloor').left}px`, 
+                              top: `${getPosition(room.number, index, 'groundFloor').top}px`,
+                              transform: `rotate(${getPosition(room.number, index, 'groundFloor').rotation}deg)`,
+                              zIndex: dragRef.current.currentRoom === room.number && dragRef.current.floor === 'groundFloor' ? 100 : 5
+                            }}>
+                            {/* Draggable Room Card with Price Tooltip */}
                             <div 
+                              onMouseDown={(e) => handleMouseDown(e, room.number, 'groundFloor')}
                               className="room-card-container" 
-                              onClick={() => handleRoomCardClick('groundFloor', room.number)}
                               style={{
                                 ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
                                   opacity: 0.4,
                                   filter: 'grayscale(80%)',
                                   pointerEvents: 'none'
-                                } : {})
+                                } : {}),
+                                cursor: 'move' /* Change cursor to indicate draggable */
                               }}
-                            >
+                              >
+                                {/* Drag indicator */}
+                                <div 
+                                  style={{
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    width: '10px',
+                                    height: '10px',
+                                    borderRadius: '50%',
+                                    background: 'rgba(71, 118, 230, 0.8)',
+                                    border: '1px solid white',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                    zIndex: 5
+                                  }}
+                                ></div>
+                                
+                                {/* Rotation button */}
+                                <div 
+                                  className="rotation-button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    rotateRoomCard(room.number, 'groundFloor');
+                                  }}
+                                >
+                                  ↻
+                                </div>
+                                
+                                {/* We'll handle click on the room card itself */}
                               {/* Price tooltip that appears on hover */}
                               <div className="price-tooltip">
                                 <div className="price-row">
@@ -3474,6 +3741,10 @@ function App() {
                               {/* Room card */}
                               <div 
                                 className={`room-card room-card-front ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRoomCardClick('groundFloor', room.number);
+                                }}
                                 style={{
                                   padding: '6px',
                                   display: 'flex',
@@ -3567,23 +3838,64 @@ function App() {
                 {/* Room Filters Title - REMOVED */}
                 
                 {/* First Floor Rooms */}
-                <div style={{
-                  background: 'linear-gradient(145deg, rgba(255,255,255,0.85), rgba(243,241,255,0.7))',
-                  padding: '30px',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 10px rgba(106, 130, 251, 0.1)',
-                  border: '1px solid rgba(255,255,255,0.6)',
-                  position: 'relative',
-                  zIndex: 2,
-                  marginBottom: '50px',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-around',
-                  gap: '70px 40px' /* Very large gap to ensure no overlapping */
-                }}>
+                <div 
+                  className={isLayoutLocked ? 'layout-locked' : ''}
+                  style={{
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.85), rgba(243,241,255,0.7))',
+                    padding: '30px',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 10px rgba(106, 130, 251, 0.1)',
+                    border: '1px dashed rgba(106, 130, 251, 0.3)',
+                    position: 'relative',
+                    zIndex: 2,
+                    marginBottom: '50px',
+                    display: 'block', /* Changed from flex to block for absolute positioning */
+                    minHeight: '900px', /* Significantly increased height for more dragging space */
+                    position: 'relative'
+                  }}>
+                  {/* Reset positions button */}
+                  <button 
+                    onClick={resetRoomPositions}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '120px',
+                      padding: '6px 12px',
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: '4px',
+                      cursor: isLayoutLocked ? 'not-allowed' : 'pointer',
+                      fontSize: '12px',
+                      opacity: isLayoutLocked ? 0.6 : 1
+                    }}
+                  >
+                    Reset Positions
+                  </button>
+                  
+                  {/* Lock/Unlock button */}
+                  <button 
+                    onClick={toggleLayoutLock}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      padding: '6px 12px',
+                      background: isLayoutLocked ? 'rgba(252, 92, 125, 0.8)' : 'rgba(106, 130, 251, 0.8)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}
+                  >
+                    {isLayoutLocked ? '🔒 Unlock Layout' : '🔓 Lock Layout'}
+                  </button>
                   {rooms.firstFloor
                     .filter(filterRoom)
-                    .map(room => {
+                    .map((room, index) => {
                       // Calculate price based on room properties
                       const now = new Date();
                       const day = now.getDay();
@@ -3610,19 +3922,55 @@ function App() {
                       const total = basePrice + tax;
                       
                       return (
-                        <div key={room.number} style={{ position: 'relative' }}>
-                          {/* Room Card with Price Tooltip */}
+                        <div 
+                          key={room.number} 
+                          style={{ 
+                            position: 'absolute', 
+                            left: `${getPosition(room.number, index, 'firstFloor').left}px`, 
+                            top: `${getPosition(room.number, index, 'firstFloor').top}px`,
+                            transform: `rotate(${getPosition(room.number, index, 'firstFloor').rotation}deg)`,
+                            zIndex: dragRef.current.currentRoom === room.number && dragRef.current.floor === 'firstFloor' ? 100 : 5
+                          }}>
+                          {/* Draggable Room Card with Price Tooltip */}
                           <div 
+                            onMouseDown={(e) => handleMouseDown(e, room.number, 'firstFloor')}
                             className="room-card-container" 
-                            onClick={() => handleRoomCardClick('firstFloor', room.number)}
                             style={{
                               ...(selectedRoomsForShortStay.length > 0 && !selectedRoomsForShortStay.includes(room.number) ? {
                                 opacity: 0.4,
                                 filter: 'grayscale(80%)',
                                 pointerEvents: 'none'
-                              } : {})
+                              } : {}),
+                              cursor: 'move' /* Change cursor to indicate draggable */
                             }}
                           >
+                            {/* Drag indicator */}
+                            <div 
+                              style={{
+                                position: 'absolute',
+                                top: '-5px',
+                                right: '-5px',
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                background: 'rgba(71, 118, 230, 0.8)',
+                                border: '1px solid white',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                zIndex: 5
+                              }}
+                            ></div>
+                            
+                            {/* Rotation button */}
+                            <div 
+                              className="rotation-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                rotateRoomCard(room.number, 'firstFloor');
+                              }}
+                            >
+                              ↻
+                            </div>
+                            
                             {/* Price tooltip that appears on hover */}
                             <div className="price-tooltip">
                               <div className="price-row">
@@ -3642,6 +3990,10 @@ function App() {
                             {/* Room card */}
                             <div 
                               className={`room-card room-card-front ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRoomCardClick('firstFloor', room.number);
+                              }}
                               style={{
                                 padding: '6px',
                                 display: 'flex',
