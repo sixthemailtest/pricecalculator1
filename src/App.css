@@ -253,6 +253,34 @@ div[style*="gridArea: 'firstfloor'"] h2::after {
   cursor: pointer; /* Show pointer cursor for clicking */
 }
 
+.room-card {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.selected-rooms-container .room-card {
+  padding: 5px;
+  font-size: 0.8em;
+  min-width: 80px !important;
+  max-width: 80px;
+  margin: 2px;
+}
+
+.selected-rooms-container .room-number {
+  font-size: 0.95em;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.selected-rooms-container .room-features {
+  margin-top: 2px;
+  font-size: 0.9em;
+}
+
 /* Price tooltip that appears on hover */
 .price-tooltip {
   position: absolute;

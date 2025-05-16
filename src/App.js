@@ -4,6 +4,108 @@ import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
 import LoginModal from './LoginModal';
 
+// IndexedDB helper functions for persistent storage
+const dbName = 'roomLayoutDB';
+const storeName = 'roomPositions';
+
+// Initialize the database
+const initDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, 1);
+    
+    request.onerror = (event) => {
+      console.error('Error opening IndexedDB:', event.target.error);
+      reject(event.target.error);
+    };
+    
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        db.createObjectStore(storeName, { keyPath: 'id' });
+      }
+    };
+  });
+};
+
+// Save data to IndexedDB
+const saveToIndexedDB = async (key, data) => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      
+      const request = store.put({ id: key, data: data });
+      
+      request.onsuccess = () => resolve(true);
+      request.onerror = (event) => {
+        console.error('Error saving to IndexedDB:', event.target.error);
+        reject(event.target.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to save to IndexedDB:', error);
+    // Fallback to localStorage if IndexedDB fails
+    localStorage.setItem(key, JSON.stringify(data));
+    return false;
+  }
+};
+
+// Get data from IndexedDB
+const getFromIndexedDB = async (key) => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      
+      const request = store.get(key);
+      
+      request.onsuccess = (event) => {
+        resolve(event.target.result ? event.target.result.data : null);
+      };
+      
+      request.onerror = (event) => {
+        console.error('Error getting from IndexedDB:', event.target.error);
+        reject(event.target.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to get from IndexedDB:', error);
+    // Fallback to localStorage if IndexedDB fails
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+};
+
+// Clear data from IndexedDB
+const clearFromIndexedDB = async (key) => {
+  try {
+    const db = await initDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      
+      const request = store.delete(key);
+      
+      request.onsuccess = () => resolve(true);
+      request.onerror = (event) => {
+        console.error('Error clearing from IndexedDB:', event.target.error);
+        reject(event.target.error);
+      };
+    });
+  } catch (error) {
+    console.error('Failed to clear from IndexedDB:', error);
+    // Fallback to localStorage if IndexedDB fails
+    localStorage.removeItem(key);
+    return false;
+  }
+};
+
 function App() {
   // Define filter button styles
   const filterButtonStyles = {
@@ -322,16 +424,52 @@ function App() {
   });
   
   // State for room card positions (for drag and drop functionality)
-  const [roomPositions, setRoomPositions] = useState(() => {
-    const savedPositions = localStorage.getItem('roomPositions');
-    return savedPositions ? JSON.parse(savedPositions) : {};
-  });
+  const [roomPositions, setRoomPositions] = useState({});
+  
+  // Load room positions from IndexedDB on component mount
+  useEffect(() => {
+    const loadRoomPositions = async () => {
+      const positions = await getFromIndexedDB('roomPositions');
+      if (positions) {
+        setRoomPositions(positions);
+      } else {
+        // Try to get from localStorage as fallback
+        const savedPositions = localStorage.getItem('roomPositions');
+        if (savedPositions) {
+          const parsedPositions = JSON.parse(savedPositions);
+          setRoomPositions(parsedPositions);
+          // Save to IndexedDB for future persistence
+          saveToIndexedDB('roomPositions', parsedPositions);
+        }
+      }
+    };
+    
+    loadRoomPositions();
+  }, []);
   
   // State to track whether the layout is locked
-  const [isLayoutLocked, setIsLayoutLocked] = useState(() => {
-    const lockState = localStorage.getItem('layoutLocked');
-    return lockState ? JSON.parse(lockState) : false;
-  });
+  const [isLayoutLocked, setIsLayoutLocked] = useState(false);
+  
+  // Load layout lock state from IndexedDB on component mount
+  useEffect(() => {
+    const loadLayoutLockState = async () => {
+      const lockState = await getFromIndexedDB('layoutLocked');
+      if (lockState !== null) {
+        setIsLayoutLocked(lockState);
+      } else {
+        // Try to get from localStorage as fallback
+        const savedLockState = localStorage.getItem('layoutLocked');
+        if (savedLockState) {
+          const parsedLockState = JSON.parse(savedLockState);
+          setIsLayoutLocked(parsedLockState);
+          // Save to IndexedDB for future persistence
+          saveToIndexedDB('layoutLocked', parsedLockState);
+        }
+      }
+    };
+    
+    loadLayoutLockState();
+  }, []);
   
   // State to track which card is being hovered
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -1599,6 +1737,9 @@ function App() {
     if (isLayoutLocked) return;
     
     setRoomPositions({});
+    // Clear from IndexedDB for persistence
+    clearFromIndexedDB('roomPositions');
+    // Also clear from localStorage
     localStorage.removeItem('roomPositions');
   };
   
@@ -1606,6 +1747,9 @@ function App() {
   const toggleLayoutLock = () => {
     const newLockState = !isLayoutLocked;
     setIsLayoutLocked(newLockState);
+    // Save to IndexedDB for persistence
+    saveToIndexedDB('layoutLocked', newLockState);
+    // Also save to localStorage as backup
     localStorage.setItem('layoutLocked', JSON.stringify(newLockState));
   };
   
@@ -1649,7 +1793,9 @@ function App() {
         }
       };
       
-      // Save to localStorage
+      // Save to IndexedDB for persistence
+      saveToIndexedDB('roomPositions', updatedPositions);
+      // Also save to localStorage as backup
       localStorage.setItem('roomPositions', JSON.stringify(updatedPositions));
       
       return updatedPositions;
@@ -1720,7 +1866,9 @@ function App() {
   const handleMouseUp = (e) => {
     if (!dragRef.current.isDragging) return;
     
-    // Save positions to localStorage
+    // Save positions to IndexedDB for persistence
+    saveToIndexedDB('roomPositions', roomPositions);
+    // Also save to localStorage as backup
     localStorage.setItem('roomPositions', JSON.stringify(roomPositions));
     
     // Reset drag state
@@ -3071,12 +3219,14 @@ function App() {
                         <div style={{ 
                           display: 'flex', 
                           flexWrap: 'wrap', 
-                          gap: '10px'
+                          gap: '4px'
                         }}>
                           {rooms.map(room => (
                             <div key={room.number} className={`room-card ${room.status === 'available' ? 'available' : room.status === 'cleared' ? 'cleared' : 'occupied'}`} style={{
                               position: 'relative',
-                              minWidth: '140px'
+                              minWidth: '100px',
+                              padding: '8px',
+                              fontSize: '0.9em'
                             }}>
                               <div className="room-number">Room {room.number}</div>
                               <div>{room.beds}</div>
@@ -3092,15 +3242,15 @@ function App() {
                                 }}
                                 style={{
                                   position: 'absolute',
-                                  top: '5px',
-                                  right: '5px',
+                                  top: '2px',
+                                  right: '2px',
                                   background: 'rgba(255, 255, 255, 0.8)',
                                   color: '#e53e3e',
                                   border: 'none',
                                   borderRadius: '50%',
-                                  width: '22px',
-                                  height: '22px',
-                                  fontSize: '14px',
+                                  width: '18px',
+                                  height: '18px',
+                                  fontSize: '12px',
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
